@@ -2,3 +2,4 @@ Flask==2.0.1
 Werkzeug==2.0.1
 google-cloud-storage
 flask-cors
+requests
