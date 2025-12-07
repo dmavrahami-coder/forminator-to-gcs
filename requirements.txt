@@ -1,20 +1,13 @@
 # Core Flask
-Flask==2.3.3
-Flask-CORS==4.0.0
+Flask==2.3.2
+Flask-CORS==3.0.10
 
 # Google Cloud Services
-google-cloud-storage==2.10.0
-google-cloud-firestore==2.13.0
+google-cloud-storage==2.7.0
+google-cloud-firestore==2.11.0
 
 # Utilities
-Werkzeug==2.3.7
-python-dotenv==1.0.0
-requests==2.31.0
+Werkzeug==2.2.3
 
-# Development/Testing
-pytest==7.4.3
-pytest-flask==1.2.0
-pytest-mock==3.11.1
-
-# Production (WSGI Server)
+# Production
 gunicorn==20.1.0
