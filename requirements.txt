@@ -1,13 +1,4 @@
-# Core Flask
-Flask==2.3.2
+Flask==2.1.0
 Flask-CORS==3.0.10
-
-# Google Cloud Services
-google-cloud-storage==2.7.0
-google-cloud-firestore==2.11.0
-
-# Utilities
-Werkzeug==2.2.3
-
-# Production
+google-cloud-storage==2.5.0
 gunicorn==20.1.0
