@@ -21,5 +21,5 @@ COPY . .
 ENV PORT=8080
 ENV PYTHONUNBUFFERED=TRUE
 
-# הרץ עם Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--threads", "8", "--timeout", "600", "main:app"]
+# הרץ ישירות עם Flask (ללא gunicorn)
+CMD ["python", "main.py"]
