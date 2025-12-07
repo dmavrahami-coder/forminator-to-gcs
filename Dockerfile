@@ -1,25 +1,21 @@
-# Dockerfile
+# Use Python 3.9
 FROM python:3.9-slim
 
+# Set working directory
 WORKDIR /app
 
-# התקן תלויות מערכת
-RUN apt-get update && apt-get install -y \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-
-# העתק קובץ דרישות
+# Copy requirements first for better caching
 COPY requirements.txt .
 
-# התקן תלויות Python
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# העתק את הקוד
+# Copy application code
 COPY . .
 
-# הגדר משתני סביבה
+# Set environment variables
 ENV PORT=8080
-ENV FLASK_ENV=production
+ENV PYTHONUNBUFFERED=1
 
-# הפעל את האפליקציה
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app.main:app
+# Run the application
+CMD ["python", "main.py"]
