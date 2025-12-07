@@ -42,7 +42,7 @@ def webhook():
             form_data = request.form.to_dict()
             logger.info(f"📝 FORM DATA ({len(form_data)} fields):")
             for key, value in form_data.items():
-                logger.info(f"  {key}: {value}")
+                logger.info(f"  {key}: {value[:100] if value else ''}")
         
         # קבלת files
         files_data = {}
@@ -93,4 +93,6 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
     logger.info(f"🚀 Starting Forminator Webhook Service on port {port}")
     logger.info(f"📡 Ready to receive webhooks at /webhook")
-    app.run(host='0.0.0.0', port=port, debug=False)
+    
+    # חשוב: הפעל עם host 0.0.0.0 ו-port מהסביבה
+    app.run(host='0.0.0.0', port=port)
