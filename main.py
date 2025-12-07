@@ -5,7 +5,7 @@ from google.cloud import storage
 from uuid import uuid4
 
 app = Flask(__name__)
-# הוספת CORS כדי למנוע בעיות דומיין, כפי שנדרש
+# הוספת CORS כדי למנוע בעיות דומיין
 CORS(app)
 
 # הגדרת שם הדלי לשמירת הקבצים
@@ -49,6 +49,11 @@ def webhook():
     print("=" * 50)
     print("📨 Forminator webhook received")
     
+    # --- לוגיקת אימות קלט קריטית ---
+    print(f"Content-Type: {request.content_type}")
+    print(f"Headers Sample: {dict(request.headers)}")
+    # ------------------------------------------
+
     submission_id = str(uuid4())
     uploaded_files_urls = []
     
@@ -62,10 +67,10 @@ def webhook():
     if request.files:
         print(f"✅ FILES FOUND! Keys: {list(request.files.keys())}")
         
-        # עובר על כל הקבצים שהתקבלו (request.files הוא מילון של FileStorage objects)
+        # עובר על כל הקבצים שהתקבלו
         for key, file in request.files.items():
             
-            # Forminator שולח את שדה הקובץ גם אם הוא ריק. בודקים שם קובץ וגודל
+            # בודקים שם קובץ וגודל
             if file and file.filename and file.content_length > 0:
                 
                 # הנתיב בתוך הדלי: submission_id/שם_קובץ_מקורי
@@ -76,7 +81,7 @@ def webhook():
                 try:
                     blob = GCS_BUCKET.blob(destination_blob_name)
                     
-                    # מעביר את הקורא לתחילת הקובץ למקרה ש-Flask/Werkzeug קרא אותו
+                    # מעביר את הקורא לתחילת הקובץ
                     file.seek(0) 
                     blob.upload_from_file(file)
                     
@@ -91,11 +96,16 @@ def webhook():
                 print(f"⚠️ Warning: File key '{key}' was sent, but file was empty or had no filename.")
 
     else:
-        print("❌ NO FILES FOUND in request.files. Forminator is not sending file contents (Multipart issue).")
+        print("❌ NO FILES FOUND in request.files. Forminator is likely not sending file contents as 'multipart/form-data'.")
+        # בודק אם לפחות נתוני טופס רגילים הגיעו
+        if len(form_data) > 0:
+            print(f"ℹ️ Received {len(form_data)} form fields, but no files.")
+        else:
+            print("🛑 No form data received either. Request seems empty.")
     
     # 2. הוספת מטא-דאטה לתשובה (נדרש לשלב הסנכרון Apps Script)
     form_data['submission_id'] = submission_id
-    form_data['uploaded_files'] = uploaded_files_urls # הוספת ה-URLs לנתוני הטופס
+    form_data['uploaded_files'] = uploaded_files_urls
     
     # ... כאן נדרשת לוגיקה לשמירת ה-form_data למסד נתונים פנימי (כדי שה-Apps Script יוכל למשוך אותם) ...
 
@@ -105,7 +115,7 @@ def webhook():
     
     return jsonify({
         'success': True,
-        'message': 'Files processed and uploaded to GCS.',
+        'message': 'Files processed and uploaded to GCS (if sent).',
         'submission_id': submission_id,
         'uploaded_count': len(uploaded_files_urls)
     }), 200
